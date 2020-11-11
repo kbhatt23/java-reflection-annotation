@@ -1,0 +1,33 @@
+- Java reflection is an API provided by JDK which allows programmers to have metadata/information rleated to classes or objects at runtime
+- General program takes input , and passes to methods/feilds and return output
+	, using reflection we can get program and data as input all together at runtime
+- This helps us create libraries,frameworks , desing patterns whihc otherwise be not possible,
+- Also we can have dynamic features without modifying the source code as we can add funcitonalty at runtime
+- Libraries using reflection:
+a. eclipse/intell J ide : to get auto suggestions on methods/classes
+b. spring frameworks for comoenent scan/autowiring
+c. hiberante entities , colunn , table etc
+d. junit in testin : mark with @test and no need to write main method to start the program
+e. jackson api for converting json to java pojo and vice versa
+- This reduces boiler plate code to be written by devloper and can use framework features for dynamic functionaloties
+
+
+Challenges of reflection:
+a. tough to implement and need to be very skilled otherse it can even break functionalotiies  as it gets huge access of even proivate methods
+b. overuse can make application slower and cna cause issue at runtime
+
+-  we can get Class<> relfection instance even for primitives using int.class, boolean.class but can not get it using reference variable of the same data types(primitives)
+
+- To get class instance for nested static class: class A {  static class B{}}
+-> Class.forName("package.A$B");
+		Class<InnerClass> claz = (Class<InnerClass>) Class.forName("classreflectionusage.Nestedclass.InnerClass");: This wont work-> classnotFoundException
+				Class<InnerClass> claz = (Class<InnerClass>) Class.forName("classreflectionusage.Nestedclass$InnerClass"); : This will work
+
+- We can get even synthetic fields from class.getDeclaredFields method
+	->  a synthetic field is notthing but a field a compiler generates for us and dev do not see it in code,
+	an example of synthetic field is the fileds of main class inside the inner class(non static nested class)
+	-> the inner class can directly call fields of main class wihotut creating its object ,
+	as it has one synthetic field of type main outer class
+
+
+- We can get value of static file by passing null value for object instance parameter -> as static field is independent of object and remain on class level
