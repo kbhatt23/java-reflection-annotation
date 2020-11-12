@@ -31,3 +31,10 @@ b. overuse can make application slower and cna cause issue at runtime
 
 
 - We can get value of static file by passing null value for object instance parameter -> as static field is independent of object and remain on class level
+
+- never set a field using relfection that is final
+	->  a finla field wont get updated using reflection
+	-> if alsong with final if the field is made static as well then it will gie runtime exception if we use reflection to update the field
+//final field can not be updated but do not give exception
+//final static field on update gives runtime exception
+			
