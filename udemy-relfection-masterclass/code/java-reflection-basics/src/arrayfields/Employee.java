@@ -3,7 +3,6 @@ package arrayfields;
 import java.util.Arrays;
 
 public class Employee extends SuperEmployee{
-
 	private int id;
 	
 	private String name;

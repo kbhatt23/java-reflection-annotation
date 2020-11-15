@@ -1,0 +1,86 @@
+- Annotations are nothing but a markup that cna be attached to class. methods,fields, method/consturctor parameters etc
+- These do not have functionality but can be used by reflection like code to add functionality
+- These can be used at compile time as well as can be pusehd to jvm at runtime
+- A lot of frameworks like ORM, Spring etc uses annotaiton and reflection combination to decouple functioanoit from actual soruce code
+
+- All the annotion are created using @interface keyword and all these anntoations extends java.lang.annotaiton.annotation interface
+
+- meta annotations are annotations that are used to create customa annotations like @retention/@scope etc
+
+Retention pllicies enum type:
+a. Source: The annotaiton will be available only for compiler, for example @override, @suppreseedwarning
+b. Class: These are available till the calss is compiled but on runtime it is ignored, can be used to generate class in code dynamically
+c. runtime: these are kept at compiling as well as runtime level, 
+	- reflection runs at run time and hence this scope is modtly used while adding features using reflection at runtime
+
+- Java uses @interface for creating an nnotation for logical reasons
+	-> once we call method/class/field.getAnnotation(cnnoation.class)
+	-> it returns nothing but a dyncami proxy object that implements the @interface of annotion type at runtime
+	-> we call any method and that provides the property set while usng the annotaiton 
+eg: @annotaion(name="krishna")
+	will create one dynamic proxy object that implements Annotion.class interface and method name() returns "krishna"
+
+-- Repeatable annotation:
+- An anootation that can be used multiple times on same target is called repeatble annotaiton.
+- This allows flexibility and readability
+- eg:
+	@retentition(Class level) - >as compiler actually removes this anotaiton and adds annotation definied in @reuseable annotation below		
+	@repeatable(Roles.class) -> compiler removes rol anmotation at runtime and insert Roles annotation
+	@target(.Type)
+	@interface Role{
+		String value();
+	}
+	
+	@retention(Runtime level)
+	@trarget(.type) 
+	@interface Roles{
+		Role[] value();	
+	}
+
+
+To read the annotaiton data: clazz.getAnnotationByType(Role.class)
+	-> Returns Array of Role -> Role[]
+- isAnnotationPResent method do not work on fileld/class.method or other levels for finding repeatble annotation presence
+
+
+- Java compiler on finding an annotation (@interface lappa) will actually consider this as an interface and inserts a dyncamic object of an implementation of this interface,
+	with values provided by unser in @lappa(prop1="messi"), all the emthods will just return these values provided
+
+- proxy design patter is nothing but having an extra layer that client will call instead of calling the main service class
+	, both service class and proxy class implments same interfaces and henc because of inversion of ocnvtrol clinet wont be able to understand the actual class that is helping out
+
+- in proxy class we can add features like security , extra functionlaity like adding start and end time etc
+eg: Collections.unmodifiable will return a proxy object that implemetns the same Map/list interface
+	,but all the write operations throw excption, and other read operation just delegates it to the actualyt collection/map instance methods
+
+- Sping AOP uses the same dynami proxy concpet to add functionlaity before and after a method call
+- caching can be a good use case using proxy patter
+
+- If we add reflection features in proxy design pattern it makes is very robust
+, Spring AOP, Spring cache, Spring Feign client etc uses reflection to proxide dynamic proxy at runtime 
+
+- IF we were using static proxy patter for same functionlaity for different interfaces , we have to do it manually and create that many implmenmtation proxy classes with actually the same code
+- but with help of dynamic proxy we can make it centralized at single place
+
+
+Issues with Reflectiom:
+a. Performance:
+	In generatrl reflecton code do not perform poorly, but it is a bit slower than its statically compiled code replacement
+	-> eg even for differentr kind of exceptions that a method can throw hwile runnig, in reflection code it is always wrapped to InvocationTargetExeption and add to array of error casuses
+		-> this adds more overhead in code
+	-> int has to be wrapped to Object and this adds additional overhead
+	**** a lot of things taken care by compiler at compile time gets igonred and has to be taken case by JVM at runtime
+	eg: if a method is getting called form clas , compiler check if that method exist,the parameter type is correct and all
+	, since relfection code is mostly inferred at runtime , these thigns need to be taken care by JVM at runime and hence add additional overhead
+	-> compiler also do some code optimization eg static final fields are expected not to be changed so it stores it etc
+	-> even though JIT can do code cahcing but that occurs based on freequency rules
+b. Code safety
+	-> since reflection is amde ery generic and hence mostly it takes inout.outpout as Object class, we might do wrong casting that gives issue only at runtime
+	-> we loos a lot of safety check features of compiler
+	-> if class is not present in reqruied modules, the reflection code also gives exception, we need to open the clases from provider module and that may not be even accesible to us
+c. Exception handling is very genric liuek nosucmmethod exception ,invoketargetException etc
+
+Thumb rules:
+- Only use reflection when that feature can not be done by statically typed code
+- Write a lot of automated test case so taht any cahnge in future do not break functioanlity
+- write generic ode as generic and flexible as possible , use annotation for if else conditions

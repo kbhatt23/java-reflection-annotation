@@ -50,4 +50,31 @@ public class ConfigLoader {
 			throw new RuntimeException("do not support type "+type.getName());
 		}
 	}
+	
+	public static <T> void setConfigToFields(T loaderConfig, Object instance) {
+		Class<?> serviceClass = instance.getClass();
+		if(!serviceClass.isAnnotationPresent(Service.class)) {
+			throw new RuntimeException(String.format("Class %s is not annottated with @Service", serviceClass.getSimpleName()));
+		}
+		Field[] fields = serviceClass.getDeclaredFields();
+		for(Field field: fields) {
+			field.setAccessible(true);
+			Class<?> fieldType = field.getType();
+			if(fieldType.isSynthetic()) {
+				continue;
+			}
+			if(field.isAnnotationPresent(Value.class)) {
+				Value annotation = field.getAnnotation(Value.class);
+				//supporting int, String and String[]and int[]
+				String property = annotation.property().equals("DEFAULT") ? field.getName(): annotation.property() ;
+				try{
+					Field declaredField = loaderConfig.getClass().getDeclaredField(property);
+					declaredField.setAccessible(true);
+					field.set(instance, declaredField.get(loaderConfig));
+				}catch (Exception e) {
+					// TODO: handle exception
+				}
+			}
+		}
+	}
 }
